@@ -2,20 +2,25 @@
 This is some documentation on how to quickly get Apache Airflow up and running on Heroku.
 
 1. Install or setup supported python version (I'm using [pyenv](https://github.com/pyenv/pyenv) so I just set the desired version in the project directory):
-echo "3.6.4" > .python-version
-
+    ```
+    echo "3.6.4" > .python-version
+    ```
 1. Create Python virtual environment to install Airflow along with dependencies
-python3 -m venv .venv
-source .venv/bin/activate
+    ```
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
 
 1. Install airflow, install cryptography module, and set Procfile to init db on initial run
-pip install "apache-airflow[postgres, password]"
-pip install "cryptography"
-pip freeze > requirements.txt
+    ```
+    pip install "apache-airflow[postgres, password]"
+    pip install "cryptography"
+    pip freeze > requirements.txt
+    ```
 
 1. Create a `.gitignore` file
     ```
-    echo .venv/ > .gitignore
+    echo ".venv/" > .gitignore
     ```
 
 1. Initialize the git repository and create the Heroku app with a postgres add-on:
@@ -28,18 +33,16 @@ pip freeze > requirements.txt
     heroku addons:create heroku-postgresql:hobby-dev
     ```
 
-1. Setup airflow.cfg
-  We will use `airflow.cfg` for most of our application configuration, but any secure values should be kept as Heroku config variables.  The `airflow.cfg` in this repository is already making use of the `DATABASE_URL` that was assigned when we created the database, but we will need a fernet key.  You can generate/set one thusly:
+1. We will use `airflow.cfg` for most of our application configuration, but any secure values should be kept as Heroku config variables.  The `airflow.cfg` in this repository is already making use of the `DATABASE_URL` that was assigned when we created the database, but we will need a Fernet key in order to enable encryption for connection passwords stored in the database.  You can generate/set one thusly:
     ```
     heroku config:set AIRFLOW__CORE__FERNET_KEY=`dd if=/dev/urandom bs=32 count=1 2>/dev/null | openssl base64`
     ```
-You'll also need to set `AIRFLOW_HOME` to `/app` so that Airflow knows where the `airflow.cfg` file is.  Otherwise when the database initializes it will do so using sqlite, which on Heroku will only be created on an ephemeral file system that has the lifetime of the dyno running it:
+    We'll also need to set `AIRFLOW_HOME` to `/app` so that Airflow knows where the `airflow.cfg` file is.  Otherwise when the database initializes it will do so using sqlite, which on Heroku will only be created on an ephemeral file system that has the lifetime of the dyno running it:
     ```
     heroku config:set AIRFLOW_HOME=/app
     ```
 
-1. Set Procfile to initdb on initial run
-Heroku uses a `Procfile`, a text file that indicates which command should be used to start code running.  For our initial run we just want to initialize the database, so that's what goes in our `Procfile`:
+1. Heroku uses a `Procfile`, a text file that indicates which command should be used to start code running.  For our initial run we just want to initialize the database, so that's what goes in our `Procfile`:
     ```
     echo "web: airflow initdb" > Procfile
     ```
@@ -64,23 +67,10 @@ Heroku uses a `Procfile`, a text file that indicates which command should be use
     git push heroku master
     ```
 
-1. Now when you launch the app (`heroku open`) there should be a logon screen.  
-There is no logon yet, so we need to create a new user.  This can be done via Heroku bash (via [documentation](http://airflow.apache.org/security.html))
+1. Now when you launch the app (`heroku open`) there should be a logon screen.  There is no logon yet, so we need to create a new user.  This can be done using the `create_user` command through Heroku bash ([documentation](https://airflow.apache.org/cli.html#create_user))
     ```
     heroku run bash
-    python
-    >>> import airflow
-    >>> from airflow import models, settings
-    >>> from airflow.contrib.auth.backends.password_auth import PasswordUser
-    >>> user = PasswordUser(models.User())
-    >>> user.username = 'new_user_name'
-    >>> user.email = 'new_user_email@example.com'
-    >>> user.password = 'set_the_password'
-    >>> session = settings.Session()
-    >>> session.add(user)
-    >>> session.commit()
-    >>> session.close()
-    >>> exit()
+    airflow create_user -u <username> -p <password> -r <Role> -f <FirstName> -l <LastName> -e <Email>
     ```
 
 1. Finally, modify the `Procfile` one last time to run both the web server and the scheduler.  
