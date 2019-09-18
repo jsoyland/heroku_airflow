@@ -1,5 +1,23 @@
-# Run Airflow on Heroku
-This is some documentation on how to quickly get Apache Airflow up and running on Heroku.
+# Run Apache Airflow on Heroku
+[Apache Airflow](https://airflow.apache.org/) can be used to create, schedule, and monitor workflows.  It is commonly used to define ETL processes.  An excellent example of an ETL workflow can be found [here](https://gtoonstra.github.io/etl-with-airflow/etlexample.html)
+
+### Heroku Button deployment
+Apache Airflow can be quickly and easily deployed to your own Heroku app by using this Heroku Button:
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+You will be prompted for a new Fernet key, which can be generated thusly:
+
+    dd if=/dev/urandom bs=32 count=1 2>/dev/null | openssl base64
+
+After deployment a login user will need to be created.  This can be done using the `create_user` command through Heroku bash ([documentation](https://airflow.apache.org/cli.html#create_user))
+    
+    heroku run bash
+    airflow create_user -u <username> -p <password> -r <Role> -f <FirstName> -l <LastName> -e <Email>
+    
+
+### Manual Deployment
+This is based largely on an excellent article ([here](https://medium.com/@damesavram/running-airflow-on-heroku-ed1d28f8013d)) on deploying Apache Airflow onto the Heroku platform, with some minor updates and tweaks.
+
 
 1. Install or setup supported python version (I'm using [pyenv](https://github.com/pyenv/pyenv) so I just set the desired version in the project directory):
     ```
@@ -78,4 +96,4 @@ This is some documentation on how to quickly get Apache Airflow up and running o
     echo "web:  airflow webserver --port \$PORT --daemon & airflow scheduler" > Procfile
     ```
 
-1. Now any DAGs you want to run can go in a `dags` subfolder.  A great ETL example is here:  https://gtoonstra.github.io/etl-with-airflow/etlexample.html
+1. Any DAGs you want to run can go in a `dags` subfolder within the project.
