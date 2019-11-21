@@ -3,7 +3,7 @@
 
 ### Heroku Button deployment
 Apache Airflow can be quickly and easily deployed to your own Heroku app by using this Heroku Button:
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/jsoyland/a2p-performancetest)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 You will be prompted for a new Fernet key, which can be generated thusly:
 
