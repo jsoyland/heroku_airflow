@@ -37,7 +37,7 @@ gunicorn==19.9.0
 idna==2.8
 iso8601==0.1.12
 itsdangerous==1.1.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 json-merge-patch==0.2
 jsonschema==3.0.2
 lazy-object-proxy==1.4.2
