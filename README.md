@@ -9,10 +9,10 @@ You will be prompted for a new Fernet key, which can be generated thusly:
 
     dd if=/dev/urandom bs=32 count=1 2>/dev/null | openssl base64
 
-After deployment a login user will need to be created.  This can be done using the `create_user` command through Heroku bash ([documentation](https://airflow.apache.org/cli.html#create_user))
+After deployment a login user will need to be created.  This can be done using the `users create` command through Heroku bash ([documentation](https://airflow.apache.org/cli.html#create_user))
     
     heroku run bash
-    airflow create_user -u <username> -p <password> -r <Role> -f <FirstName> -l <LastName> -e <Email>
+    airflow users create -u <username> -p <password> -r <Role> -f <FirstName> -l <LastName> -e <Email>
     
 
 ### Manual Deployment
@@ -21,7 +21,7 @@ This is based largely on an excellent article ([here](https://medium.com/@damesa
 
 1. Install or setup supported python version (I'm using [pyenv](https://github.com/pyenv/pyenv) so I just set the desired version in the project directory):
     ```
-    echo "3.6.4" > .python-version
+    echo "3.10.4" > .python-version
     ```
 1. Create Python virtual environment to install Airflow along with dependencies
     ```
