@@ -1,1 +1,1 @@
-"web: airflow webserver --port \$PORT"
+web: airflow webserver --port \$PORT
