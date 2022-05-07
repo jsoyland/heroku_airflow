@@ -59,10 +59,13 @@ This is based largely on an excellent article ([here](https://medium.com/@damesa
     ```
     heroku config:set AIRFLOW_HOME=/app
     ```
+    As SqlAlchemy no longer supports postgres://, we've had to add a new config var and change airflow.cfg to use it:
+    ```
+    heroku config:set NEW_DATABASE_URL=postgresql://bnjgfcozeqrkop:edcb2549f6871fce169205651b4cabd5614f65a9ef1e4dfe486a1fb06015aa96@ec2-52-48-159-67.eu-west-1.compute.amazonaws.com:5432/dd2kakv5hk6cdg
 
 1. Heroku uses a `Procfile`, a text file that indicates which command should be used to start code running.  For our initial run we just want to initialize the database, so that's what goes in our `Procfile`:
     ```
-    echo "web: airflow initdb" > Procfile
+    echo "web: airflow db init" > Procfile
     ```
 
 1. Commit once more and deploy to Heroku.  This will build the project on Heroku and run the database initialization command from the Procfile.  
@@ -85,10 +88,10 @@ This is based largely on an excellent article ([here](https://medium.com/@damesa
     git push heroku master
     ```
 
-1. Now when you launch the app (`heroku open`) there should be a logon screen.  There is no logon yet, so we need to create a new user.  This can be done using the `create_user` command through Heroku bash ([documentation](https://airflow.apache.org/cli.html#create_user))
+1. Now when you launch the app (`heroku open`) there should be a logon screen.  There is no logon yet, so we need to create a new user.  This can be done using the `users create` command through Heroku bash ([documentation](https://airflow.apache.org/cli.html#create_user))
     ```
     heroku run bash
-    airflow create_user -u <username> -p <password> -r <Role> -f <FirstName> -l <LastName> -e <Email>
+    airflow users create -u <username> -p <password> -r <Role> -f <FirstName> -l <LastName> -e <Email>
     ```
 
 1. Finally, modify the `Procfile` one last time to run both the web server and the scheduler.  
