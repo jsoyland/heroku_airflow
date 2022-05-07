@@ -1,4 +1,4 @@
-web: airflow initdb
+web: airflow db init
 # Step 2
 # web: airflow webserver --port \$PORT
 # Step 3
